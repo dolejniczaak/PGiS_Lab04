@@ -192,22 +192,22 @@ class Pogoda:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-			szejp=QgsVectorLayer("C:/Program Files/QGIS Brighton/apps/qgis/python/plugins/Pogoda/wojewodztwa/wojewodztwa.shp", "Wojewodztwa", "ogr")
+			layer=QgsVectorLayer("C:/Program Files/QGIS Brighton/apps/qgis/python/plugins/Pogoda/wojewodztwa/wojewodztwa.shp", "Wojewodztwa", "ogr")
 			current=calendar.timegm(time.gmtime())
-			features = processing.features(szejp)
+			features = processing.features(layer)
 			data=[]
 			current=calendar.timegm(time.gmtime())
 			for feature in features:
-				idx = szejp.fieldNameIndex('Data')
+				idx = layer.fieldNameIndex('Data')
 				data.append(feature.attributes()[idx])
 			mimi=min(data)
 			print mimi
 			diffrence=current-mimi
 			if diffrence>600:
-				QgsMapLayerRegistry.instance().addMapLayer(szejp)
+				QgsMapLayerRegistry.instance().addMapLayer(layer)
 				# warsaw # zg # szczecin # gdansk # olsztyn # bialystok # lublin # rzeszow # katowice # krakow # opole # wroclaw # poznan # bydgoszcz # kielce # lodz#
 				miasta=[3099434, 763166, 776069, 765876, 759734, 3096472, 3094802, 3090048, 3081368, 3088171, 3102014, 769250, 3093133, 756135, 3083829, 3080165]
-				szejp.startEditing()
+				layer.startEditing()
 				for i in miasta:
 						adres="http://api.openweathermap.org/data/2.5/group?units=metric&lang=pl&APPID=58c69221430719fc84f0a91477ee6a90&id="
 						adres=adres+str(i)
@@ -238,9 +238,9 @@ class Pogoda:
 							wartosci.append(chm)
 							wartosci.append(dt)
 							ff='"kod"='+str(wartosci[0])
-							field_names = [field.name() for field in szejp.pendingFields() ]
-							ids = [f.id() for f in szejp.getFeatures(QgsFeatureRequest().setFilterExpression(ff))]
-							fields = szejp.pendingFields()
+							field_names = [field.name() for field in layer.pendingFields() ]
+							ids = [f.id() for f in layer.getFeatures(QgsFeatureRequest().setFilterExpression(ff))]
+							fields = layer.pendingFields()
 							i1=fields.indexFromName('Temp')
 							i2=fields.indexFromName('TempMax')
 							i3=fields.indexFromName('TempMin')
@@ -250,24 +250,23 @@ class Pogoda:
 							i7=fields.indexFromName('KierWia')
 							i8=fields.indexFromName('Chmury')
 							i9=fields.indexFromName('Data')
-							szejp.changeAttributeValue(ids[0],i1,wartosci[1])
-							szejp.changeAttributeValue(ids[0],i2,wartosci[2])
-							szejp.changeAttributeValue(ids[0],i3,wartosci[3])
-							szejp.changeAttributeValue(ids[0],i4,wartosci[4])
-							szejp.changeAttributeValue(ids[0],i5,wartosci[5])
-							szejp.changeAttributeValue(ids[0],i6,wartosci[6])
-							szejp.changeAttributeValue(ids[0],i7,wartosci[7])
-							szejp.changeAttributeValue(ids[0],i8,wartosci[8])
-							szejp.changeAttributeValue(ids[0],i9,wartosci[9])
-							szejp.updateFields()
-				szejp.commitChanges()
-				adres2="http://api.openweathermap.org/data/2.5/group?units=metric&lang=pl&APPID=58c69221430719fc84f0a91477ee6a90&id="
+							layer.changeAttributeValue(ids[0],i1,wartosci[1])
+							layer.changeAttributeValue(ids[0],i2,wartosci[2])
+							layer.changeAttributeValue(ids[0],i3,wartosci[3])
+							layer.changeAttributeValue(ids[0],i4,wartosci[4])
+							layer.changeAttributeValue(ids[0],i5,wartosci[5])
+							layer.changeAttributeValue(ids[0],i6,wartosci[6])
+							layer.changeAttributeValue(ids[0],i7,wartosci[7])
+							layer.changeAttributeValue(ids[0],i8,wartosci[8])
+							layer.changeAttributeValue(ids[0],i9,wartosci[9])
+							layer.updateFields()
+				layer.commitChanges()
+				adres2="http://api.openweathermap.org/data/2.5/group?units=metric&lang=pl&APPID=58c69221430719fc84f0a91477ee6a90&id=3099434,763166,776069,765876,759734,3096472,3094802,3090048,3081368,3088171,3102014,769250,3093133,756135,3083829,3080165"
 				response2 = urllib.urlopen(adres2)
 				dataa = json.loads(response2.read())
-				plik=open("C:/Program Files/QGIS Brighton/apps/qgis/python/plugins/Pogoda/dane.json","w")
+				plik=open("C:/Program Files/QGIS Brighton/apps/qgis/python/plugins/Pogoda/dane.json","w+")
 				plik.write(json.dumps(dataa))
 				plik.close()
-
 			else:
-				QgsMapLayerRegistry.instance().addMapLayer(szejp)
+				QgsMapLayerRegistry.instance().addMapLayer(layer)
 			pass
